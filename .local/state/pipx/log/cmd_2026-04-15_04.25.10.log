@@ -1,0 +1,12 @@
+   126.4ms (setup:1108): 2026-04-15 04:25:10
+   126.5ms (setup:1109): /usr/bin/pipx ensurepath
+   126.6ms (setup:1110): pipx version is 1.7.1
+   126.6ms (setup:1111): Default python interpreter is '/usr/bin/python3.13'
+   126.8ms (mkdir:76): creating directory /home/soloshiki/.local/share/pipx/venvs
+   127.9ms (mkdir:76): creating directory /home/soloshiki/.local/bin
+   128.3ms (mkdir:76): creating directory /home/soloshiki/.local/share/man
+   128.7ms (mkdir:76): creating directory /home/soloshiki/.cache/pipx
+   129.2ms (mkdir:76): creating directory /home/soloshiki/.local/share/pipx/py
+   129.6ms (setup:1125): Adding CACHEDIR.TAG to cache directory
+   129.8ms (setup:1125): Adding CACHEDIR.TAG to cache directory
+  1194.8ms (cli:1187): pipx finished.
