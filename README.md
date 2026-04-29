@@ -10,17 +10,17 @@ El funcionamiento se basa en una arquitectura **Master-Slave** (Maestro-Esclavo)
 
 ### 1. Nivel Superior: Inteligencia y Visión (Nodo Maestro)
 * **Hardware:** Rock Pi 3C.
-* **SO:** Linux (Optimizado para estabilidad).
+* **SO:** Debian 12 Bookworm (Optimizado para estabilidad).
 * **Funciones:**
-    * **Computer Vision:** Modelo de detección entrenado con +8,000 imágenes para identificación de objetivos.
-    * **LLM (Large Language Model):** Toma de decisiones lógica basada en el entorno.
+    * **Computer Vision:** Modelo de detección entrenado con +4,900 imágenes para identificación de objetivos.
+    * **LLM (Large Language Model):** Toma de decisiones lógica basada en lo solicitado por el usuario.
     * **Telemetría:** Servidor MQTT para envío de datos en tiempo real.
     * **Acceso Remoto:** Gestión total del sistema vía SSH para diagnósticos de emergencia.
 
 ### 2. Nivel Inferior: Control y Actuación (Nodo Esclavo)
 * **Hardware:** LEGO EV3.
 * **Funciones:**
-    * **Navegación:** Control de motores y encoders.
+    * **Navegación:** Control de motores.
     * **Seguridad:** Gestión de sensores ultrasónicos para el protocolo de frenado activo (distancia de seguridad de 15 cm).
     * **Resiliencia:** Capacidad de mantener movimientos básicos incluso si el nodo maestro se encuentra en reinicio o carga pesada.
 
@@ -37,10 +37,10 @@ El funcionamiento se basa en una arquitectura **Master-Slave** (Maestro-Esclavo)
 
 ## 🛠️ Stack Tecnológico
 
-* **Lenguajes:** Python (IA y lógica), C++ (Control de sensores).
-* **Protocolos:** MQTT, SSH, I2C/Serial.
-* **IA:** TensorFlow Lite / Edge Impulse.
-* **Monitoreo:** Dashboard de telemetría para Ground Control Station.
+* **Lenguajes:** Python (IA, lógica, control de motores y sensores)
+* **Protocolos:** MQTT, SSH
+* **IA:** TensorFlow Lite / Edge Impulse / Ollama 3.2
+* **Monitoreo:** Dashboard de telemetría.
 
 ---
 
