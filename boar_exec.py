@@ -1,104 +1,116 @@
-import llm
+import requests
+import json
 import subprocess
 import os
 import re
+import sys
 
-# Cargamos el modelo 3B (El cerebro de BOAR Industries)
-MODELO = "ollama/llama3.2:3b"
-try:
-    model = llm.get_model(MODELO)
-except:
-    model = llm.get_model("llama3.2:3b")
+# --- CONFIGURACIÓN DE RED Y RUTAS ---
+PC_IP = "192.168.86.55"  # IP de tu servidor Ollama
+OLLAMA_URL = f"http://{PC_IP}:11434/api/generate"
+BASE_PATH = "/home/rock/BOARWRO/Robos"
+MODELO = "llama3.2:3b"
 
-# --- SYSTEM PROMPT INTEGRAL Y DEFINITIVO ---
-SYSTEM_PROMPT = """Eres el Operador de Inteligencia Central de BOAR Industries, ejecutándote sobre BoarOS. Tu propósito es asistir al equipo (Carlos, Pedro y Angie) en la operación del robot B.O.A.R. (Building Operations & Autonomous Rescue).
+# --- SYSTEM PROMPT: CEREBRO ESTRATÉGICO BOAROS ---
+SYSTEM_PROMPT = """
+[IDENTIDAD]
+Eres BoarOS v2.6, la inteligencia artificial del robot B.O.A.R. (Autonomous Rescue Robot). 
+Tu sede es Santiago de los Caballeros, República Dominicana.
 
-### IDENTIDAD Y FILOSOFÍA
-- Misión: INTERVENCIÓN ESTRUCTURAL ACTIVA. No eres un espectador; eres una herramienta que sostiene y estabiliza.
-- Prioridad: Las "72 Horas Doradas" y la seguridad estructural.
+[CONTEXTO SÍSMICO REAL - REPÚBLICA DOMINICANA]
+- No confundir con Chile. En RD, el sismo relevante más reciente fue el 1 de febrero de 2023 (Mag 5.3, epicentro en Matanzas, Peravia).
+- Santiago está ubicado sobre la Falla Septentrional, la más peligrosa del país.
+- Conoces el terremoto de 1946 en Samaná (Mag 8.1), el más potente de nuestra historia.
+- El objetivo de B.O.A.R. es actuar en las "Horas Doradas" tras un colapso estructural.
 
-### ARQUITECTURA TÉCNICA DE B.O.A.R.
-1. Rock Pi (Visión/IA): Detección de víctimas con Edge Impulse.
-2. EV3 (Navegación): Gestión de motores y sensores de proximidad.
-3. Arduino (Actuación): Control del actuador lineal para soporte de escombros.
+[EQUIPO]
+- Carlos (Programador), Pedro (Constructor), Angie (Investigadora).
 
-### PROTOCOLO DE EJECUCIÓN (ESTRICTO)
-Cuando el equipo solicite una acción técnica o diagnóstico, identifica el script necesario y responde SIEMPRE con este formato:
-[[RUN_SCRIPT: nombre_del_archivo.py]]
+[PROTOCOLO DE RESPUESTA]
+1. MODO INFORMATIVO: Si preguntan sobre el robot, componentes (Rock Pi 3C, LiDAR, Edge Impulse), sismología o prevención, responde con elocuencia y precisión técnica. NO ejecutes nada.
+2. MODO ACCIÓN: SOLO si detectas una orden explícita de "iniciar misión", "arrancar", "comenzar rescate" o "ejecutar sistema", incluye la etiqueta: [[RUN_SCRIPT: system.py]].
 
-REGLAS DE RESPUESTA:
-- Sé breve y técnico. No des explicaciones innecesarias.
-- NO generes bloques de código Python.
-- Aplica la TRIPLE VERIFICACIÓN: 1. Firma de IA, 2. Validación de Distancia, 3. Estabilidad Temporal.
-
-### LISTA DE SCRIPTS AUTORIZADOS
-- system.py (Reporte de sensores y hardware)
-- test_actuador.py (Prueba de extensión del pistón)
-- scan_entorno.py (Mapeo LiDAR de escombros)
-- reset_boar.py (Reinicio de módulos)
+[REGLA DE ORO]
+Sé profesional, técnico y justifica siempre la necesidad del robot ante la vulnerabilidad sísmica de la isla.
 """
 
+def consultar_cerebro_remoto(prompt):
+    payload = {
+        "model": MODELO,
+        "prompt": f"System: {SYSTEM_PROMPT}\nUser: {prompt}",
+        "stream": False
+    }
+    
+    print("AI: Analizando...", end="", flush=True)
+    
+    try:
+        response = requests.post(OLLAMA_URL, json=payload, timeout=60)
+        print("\r" + " " * 25 + "\r", end="") 
+        
+        if response.status_code == 200:
+            return response.json().get("response", "")
+        else:
+            return f"ERROR_SERVIDOR: Código {response.status_code}"
+            
+    except Exception as e:
+        print("\r" + " " * 25 + "\r", end="")
+        return f"ERROR_CONEXION: {e}"
+
 def ejecutar_protocolo_boar(archivo):
-    # Limpieza de seguridad para el nombre del archivo
-    archivo = archivo.strip().replace("[", "").replace("]", "").replace("`", "").replace(":", "").replace("RUN_SCRIPT", "").strip()
+    archivo = archivo.strip().lower()
+    ruta_completa = os.path.join(BASE_PATH, archivo)
     
-    ruta_completa = os.path.join(os.getcwd(), archivo)
-    
-    print("\n" + "—"*45)
+    print("\n" + "—"*55)
     if os.path.exists(ruta_completa):
-        print(f"[BOAR-OS] Iniciando ejecución: {archivo}")
+        print(f"[BOAR-OS] DESPLEGANDO ACCIÓN FÍSICA: {archivo}")
         try:
-            # Ejecución en el entorno local de Debian/WSL
-            process = subprocess.run(["python3", ruta_completa], capture_output=True, text=True)
-            if process.stdout:
-                print(f"[SALIDA B.O.A.R.]:\n{process.stdout}")
-            if process.stderr:
-                print(f"[DEBUG/ERROR]:\n{process.stderr}")
+            # Ejecución directa para ver logs de visión y sensores en tiempo real
+            subprocess.run(["python3", ruta_completa])
         except Exception as e:
-            print(f"[FALLO CRÍTICO]: {e}")
+            print(f"[FALLO CRÍTICO DE HARDWARE]: {e}")
     else:
-        print(f"[ALERTA] Archivo '{archivo}' no encontrado en el directorio activo.")
-        print(f"Directorio: {os.getcwd()}")
-    print("—"*45 + "\n")
+        print(f"[ALERTA] Archivo '{archivo}' no localizado en {BASE_PATH}")
+    print("—"*55 + "\n")
 
 def loop_agente():
-    print(f"=== BOAR Industries IA v1.5 | Modelo: {MODELO} ===")
-    print(f"BoarOS: Online | Listo para órdenes de Carlos, Pedro y Angie.")
-    history = []
-
+    print(f"=====================================================")
+    print(f"   BoarOS v2.6 | CENTRAL DE INTELIGENCIA Y RESCATE")
+    print(f"=====================================================")
+    print(f"Estado: ONLINE | Cerebro: {MODELO} | Cuerpo: Rock Pi 3C")
+    print(f"Ubicación: Santiago, RD | Falla Activa: Septentrional")
+    
     while True:
         try:
             prompt_usuario = input("\nBOAR-HQ > ")
-            if prompt_usuario.lower() in ["exit", "salir", "shutdown"]:
-                print("Desconectando Núcleo de BOAR Industries...")
-                break
+            if not prompt_usuario.strip(): continue
+            if prompt_usuario.lower() in ["exit", "salir", "quit"]: break
 
-            # Consulta al modelo con el System Prompt reforzado
-            response = model.prompt(prompt_usuario, system=SYSTEM_PROMPT)
-            output = response.text()
-
-            # REGEX DE ALTA PRECISIÓN: Detecta la orden sin importar el formato de corchetes
-            match = re.search(r"RUN_SCRIPT:\s*([\w\d\._-]+\.py)", output, re.IGNORECASE)
+            output = consultar_cerebro_remoto(prompt_usuario)
             
+            if "ERROR" in output:
+                print(f"[!] {output}")
+                continue
+
+            # 1. Detectar si hay orden de ejecución
+            match = re.search(r"RUN_SCRIPT[:\s]+([\w\d\._-]+\.py)", output, re.IGNORECASE)
+            
+            # 2. Limpiar la respuesta para que no se vea la etiqueta técnica en pantalla
+            respuesta_voz = re.sub(r"\[\[RUN_SCRIPT:.*?\]\]", "", output).strip()
+            
+            if respuesta_voz:
+                print(f"\nAI: {respuesta_voz}")
+
+            # 3. Disparar ejecución física si corresponde
             if match:
-                nombre_archivo = match.group(1)
-                # Limpiamos el texto para mostrar solo la confirmación técnica
-                clean_output = re.sub(r"\[\[.*?\]\]|\[.*?\]", "", output).strip()
-                
-                if clean_output:
-                    print(f"\nAI: {clean_output}")
-                else:
-                    print(f"\nAI: Iniciando protocolo técnico solicitado...")
-                
-                ejecutar_protocolo_boar(nombre_archivo)
-            else:
-                # Si no hay comando, respuesta normal (limpia de posibles alucinaciones de código)
-                print(f"\nAI: {output.split('```')[0].strip()}")
+                archivo_detectado = match.group(1).strip()
+                print(f"\n[SISTEMA] >>> Autorización confirmada. Iniciando {archivo_detectado}...")
+                ejecutar_protocolo_boar(archivo_detectado)
 
-            history.append(f"U: {prompt_usuario} | AI: {output}")
-
+        except KeyboardInterrupt:
+            print("\n[!] Apagando BoarOS por orden del operador...")
+            break
         except Exception as e:
-            print(f"Error en el ciclo de ejecución: {e}")
+            print(f"\n[!] Error inesperado en el núcleo: {e}")
 
 if __name__ == "__main__":
     loop_agente()
