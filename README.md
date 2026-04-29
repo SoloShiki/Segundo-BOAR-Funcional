@@ -1,6 +1,6 @@
 
 
-# B.O.A.R. (Autonomous Rescue Robot) 🐗🚑
+# B.O.A.R. (Building Operations and Autonomous Rescue) 🐗🚑
 
 **B.O.A.R.** es un ecosistema robótico de rescate diseñado para la detección de víctimas y la estabilización de entornos en zonas de desastre. A diferencia de los sistemas convencionales, B.O.A.R. integra **Edge AI** y un sistema de control distribuido para operar de forma totalmente autónoma sin dependencia de la nube.
 
