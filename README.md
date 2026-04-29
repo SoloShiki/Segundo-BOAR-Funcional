@@ -1,6 +1,4 @@
-Este es un esquema para tu archivo `README.md`. Está diseñado para que cualquier reclutador, juez de la WRO o entusiasta de la robótica entienda la complejidad técnica de tu proyecto de inmediato.
 
----
 
 # B.O.A.R. (Autonomous Rescue Robot) 🐗🚑
 
